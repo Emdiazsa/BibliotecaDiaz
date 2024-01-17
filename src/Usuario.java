@@ -1,13 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author administrador
- */
 
 
 // Clase Usuario que hereda de Persona e incluye atributos específicos para la gestión de inicio de sesión

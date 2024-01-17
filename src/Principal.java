@@ -7,11 +7,13 @@ public class Principal {
     private static final ArrayList<Usuario> usuarios = new ArrayList<>();
     private static final ArrayList<Libro> listadoLibrosDisponible  = new ArrayList<>();
     private static final ArrayList<Libro> listadoLibrosOcupados  = new ArrayList<>();
+    private static final ArrayList<Pelicula> listadoPeliculasDisponible  = new ArrayList<>();
+    private static final ArrayList<Pelicula> listadoPeliculasOcupadas  = new ArrayList<>();
     private static Usuario usuarioActual;
     private static final Scanner scanner = new Scanner(System.in);
 
     
-    public static void crearUsuariosYLibrosAlIniciaApp(){
+    public static void crearUsuariosYLibrosYPeliculasAlIniciaApp(){
         //CREO USUARIOS
         Usuario usuario1 = new Usuario("Eva", 18 ,"Eva", "clave1", 'U');
         usuarios.add(usuario1);
@@ -50,16 +52,24 @@ public class Principal {
         listadoLibrosDisponible.add(libro9);
         Libro libro10 = new Libro("Rayuela", "Ficción", "Estantería 10", "0", false, usuario4);
         listadoLibrosOcupados.add(libro10);
+        
+        // Creación de 3 peliculas con nombres
+        Pelicula pelicula1 = new Pelicula( "Titanic", "9", true);
+        listadoPeliculasDisponible.add(pelicula1);
+        Pelicula pelicula2 = new Pelicula( "Avatar", "8", false);
+        listadoPeliculasOcupadas.add(pelicula2);
+        Pelicula pelicula3 = new Pelicula( "Los Increibles", "10", true);
+        listadoPeliculasDisponible.add(pelicula3);
 
     }
     
     public static void main(String[] args) {
         // Crear algunos usuarios y libros predefinidos para pruebas
-        crearUsuariosYLibrosAlIniciaApp();
+        crearUsuariosYLibrosYPeliculasAlIniciaApp();
 
         int opcion;
         do {
-            System.out.println("BIENVENIDO A LA BIBLIOTECA MAYOR!!!");
+            System.out.println("BIENVENIDO A LA BIBLIOTECA DIAZ!!!");
             
             System.out.println("\t1. Iniciar Sesión");
             System.out.println("\t2. Registrarse");
@@ -149,6 +159,9 @@ public class Principal {
             System.out.println("\t4. Ver usuarios registrados.");
             System.out.println("\t5. Modificar usuario.");
             System.out.println("\t6. Listado de libros con su dueño.");
+            System.out.println("\t7. Añadir pelicula.");
+            System.out.println("\t8. Modificar pelicula.");
+            System.out.println("\t9. Eliminar pelicula.");
             System.out.println("\t0. Volver al Menú Principal");
 
             System.out.print("Ingrese la opción: ");
@@ -173,6 +186,15 @@ public class Principal {
                 case 6:
                     mostrarLibrosConDueño();
                     break;
+                case 7:
+                    agregarPelicula();
+                    break;
+                case 8:
+                    modificarPelicula();
+                    break;
+                case 9:
+                    eliminarPelicula();
+                    break;
                 case 0:
                     System.out.println("Volviendo al Menú Principal");
                     break;
@@ -190,9 +212,12 @@ public class Principal {
         do {
             System.out.println("BIENVENIDO " + nombre);
             
-            System.out.println("\t1. Recojer un libro.");
+            System.out.println("\t1. Recoger un libro.");
             System.out.println("\t2. Devolver un libro.");
             System.out.println("\t3. Ver listado de libros");
+            System.out.println("\t4. Recoger una pelicula.");
+            System.out.println("\t5. Devolver una pelicula.");
+            System.out.println("\t6. Ver listado de peliculas.");
             System.out.println("\t0. Volver al Menú Principal");
             
             System.out.print("Ingrese la opción: ");
@@ -207,6 +232,15 @@ public class Principal {
                     break;
                 case 3:
                     mostrarListadoLibros();
+                    break;
+                case 4:
+                    recogerPelicula();
+                    break;
+                case 5:
+                    devolverPelicula();
+                    break;
+                case 6:
+                    mostrarListadoPeliculas();
                     break;
                 case 0:
                     System.out.println("Volviendo al Menú Principal");
@@ -240,7 +274,7 @@ public class Principal {
         }
     }
     
-    // METODO PARA DEVOLVER UN  LIBRO
+    // METODO PARA DEVOLVER UN LIBRO
     private static void devolverLibro() {
         System.out.print("Ingrese el nombre del libro que desea devolver: ");
         scanner.nextLine();
@@ -271,7 +305,7 @@ public class Principal {
         return null; // El libro no se encontró en la lista de prestados
     }
 
-    // METODO PARA MOSTRAR LIBROS ( TODOS O SOLO DISPONIBLES)
+    // METODO PARA MOSTRAR LIBROS (TODOS O SOLO DISPONIBLES)
     private static void mostrarListadoLibros() {
         System.out.println("¿Quieres ver todos los libros o solo los disponibles?");
         System.out.println("\t1. Todos los libros");
@@ -328,7 +362,116 @@ public class Principal {
         return null; // El libro no se encontró en la lista de disponibles
     }
     
-   
+   // METODO PARA RECOGER UNA PELICULA
+    private static void recogerPelicula() {
+        System.out.print("Ingrese el nombre de la pelicula que desea recoger: ");
+        scanner.nextLine();
+        String nombrePelicula = scanner.nextLine();
+
+        Pelicula pelicula = buscarPeliculaPorNombre(nombrePelicula);
+
+        if (pelicula != null && pelicula.isDisponible()) {
+            pelicula.setDisponible(false); // Cambiamos el estado a no disponible
+            pelicula.setUsuario(usuarioActual);
+            listadoPeliculasOcupadas.add(pelicula);
+            listadoPeliculasDisponible.remove(pelicula);
+            System.out.println("Pelicula recogida con éxito.");
+        } else if (pelicula == null) {
+            System.out.println("Pelicula no encontrada.");
+        } else {
+            System.out.println("La pelicula no está disponible para recoger.");
+        }
+    }
+    
+    // METODO PARA DEVOLVER UNA PELICULA
+    private static void devolverPelicula() {
+        System.out.print("Ingrese el nombre de la pelicula que desea devolver: ");
+        scanner.nextLine();
+        String nombrePelicula = scanner.nextLine();
+
+        Pelicula pelicula = buscarPeliculaPrestadaPorNombre(nombrePelicula);
+
+        if (pelicula != null && pelicula.getUsuario() != null && pelicula.getUsuario().equals(usuarioActual)) {
+            pelicula.setDisponible(true);
+            pelicula.setUsuario(null);
+            listadoPeliculasDisponible.add(pelicula);
+            listadoPeliculasOcupadas.remove(pelicula);
+            System.out.println("Pelicula devuelta con éxito.");
+        } else if (pelicula == null) {
+            System.out.println("Pelicula no encontrada.");
+        } else {
+            System.out.println("No puedes devolver esta pelicula, ya que no está asociada a tu cuenta.");
+        }
+    }
+    
+     // METODO PARA BUSCAR PELICULA POR NOMBRE
+    private static Pelicula buscarPeliculaPrestadaPorNombre(String nombrePelicula) {
+        for (Pelicula pelicula : listadoPeliculasOcupadas) {
+            if (pelicula.getNombre().equalsIgnoreCase(nombrePelicula)) {
+                return pelicula;
+            }
+        }
+        return null; // La pelicula no se encontró en la lista de prestados
+    }
+    
+    // METODO PARA MOSTRAR PELICULAS (TODAS O SOLO DISPONIBLES)
+    private static void mostrarListadoPeliculas() {
+        System.out.println("¿Quieres ver todas las peliculas o solo las disponibles?");
+        System.out.println("\t1. Todas las peliculas");
+        System.out.println("\t2. Solo las disponibles");
+        System.out.print("Ingrese la opción: ");
+        int opcionListado = scanner.nextInt();
+
+        switch (opcionListado) {
+            case 1:
+                mostrarTodasLasPeliculas();
+                break;
+            case 2:
+                mostrarPeliculasDisponibles();
+                break;
+            default:
+                System.out.println("Opción no válida. Volviendo al menú principal.");
+                break;
+        }
+    }
+    
+     // METODO PARA MOSTRAR TODAS LAS PELICULAS
+    private static void mostrarTodasLasPeliculas() {
+        System.out.println("Listado de Todas las Peliculas:");
+        for (Pelicula pelicula : listadoPeliculasDisponible) {
+            System.out.println(pelicula);
+        }
+        for (Pelicula pelicula : listadoPeliculasOcupadas) {
+            System.out.println(pelicula);
+        }
+    }
+    
+     //METODO PARA MOSTRAR SOLO PELICULAS DISPONIBLES
+    private static void mostrarPeliculasDisponibles() {
+        System.out.println("Listado de Peliculas Disponibles:");
+        for (Pelicula pelicula : listadoPeliculasDisponible) {
+            System.out.println(pelicula);
+        }
+    }
+    
+    
+    // METODO PARA BUSCAR PELICULA ENTRE LAS DISPONIBLES Y LAS QUE NO
+    private static Pelicula buscarPeliculaPorNombre(String nombrePelicula) {
+        for (Pelicula pelicula : listadoPeliculasDisponible) {
+            if (pelicula.getNombre().equals(nombrePelicula)) {
+                return pelicula;
+            }
+        }
+        
+        for (Pelicula pelicula : listadoPeliculasOcupadas) {
+            if (pelicula.getNombre().equals(nombrePelicula)) {
+                return pelicula;
+            }
+        }
+        return null; // La pelicula no se encontró en la lista de disponibles
+    }
+    
+    
     //METODOS MENU ADMINISTRADOR 
     
     //AÑADIR LIBRO
@@ -451,4 +594,58 @@ public class Principal {
         }
     }
    
+    //AÑADIR PELICULA
+    private static void agregarPelicula() {
+    System.out.print("Ingrese el nombre de la nueva pelicula: ");
+    scanner.nextLine();
+    String nombrePelicula = scanner.nextLine();
+    System.out.print("Ingrese la nota de la nueva pelicula: ");
+    String nota = scanner.next();
+
+    // Puedes establecer disponible como true al agregar un nuevo libro
+    Pelicula nuevaPelicula = new Pelicula(nombrePelicula, nota, true);
+    listadoPeliculasDisponible.add(nuevaPelicula);
+
+    System.out.println("Pelicula añadida con éxito.");
+}
+    
+//MODIFICAR PELICULA
+    private static void modificarPelicula() {
+    System.out.print("Ingrese el nombre de la pelicula que desea modificar: ");
+    scanner.nextLine();
+    String nombrePelicula = scanner.nextLine();
+
+    Pelicula pelicula = buscarPeliculaPorNombre(nombrePelicula);
+
+    if (pelicula != null) {
+        System.out.println("Ingrese los nuevos datos para el libro:");
+        System.out.print("Nuevo nombre de la pelicula: ");
+        pelicula.setNombre(scanner.next());
+        System.out.print("Nueva nota: ");
+        pelicula.setNota(scanner.next());
+
+        System.out.println("Pelicula modificada con éxito.");
+    } else {
+        System.out.println("Pelicula no encontrada.");
+    }
+}
+    
+  
+    //BORRAR PELICULA
+    private static void eliminarPelicula() {
+    System.out.print("Ingrese el nombre de la pelicula que desea eliminar: ");
+    scanner.nextLine();
+    String nombrePelicula = scanner.nextLine();
+
+    Pelicula pelicula = buscarPeliculaPorNombre(nombrePelicula);
+    //ELIMINA PELICULA SOLO SI NO LA TIENE NADIE
+    if (pelicula != null) {
+        listadoPeliculasDisponible.remove(pelicula);
+        System.out.println("Pelicula eliminada con éxito.");
+    } else {
+        System.out.println("Pelicula no encontrada.");
+    }
+}
+
+
 }

@@ -74,7 +74,7 @@ public class Libro {
     }
     @Override
     public String toString() {
-        return "Libro con " + " nombre='" + nombre + '\'' + ", pasillo='" + pasillo + '\'' + 
+        return "Libro con" + " nombre='" + nombre + '\'' + ", pasillo='" + pasillo + '\'' + 
                 ", estanteria='" + estanteria + '\'' +", nota='" + nota + '\'';
     }
     
